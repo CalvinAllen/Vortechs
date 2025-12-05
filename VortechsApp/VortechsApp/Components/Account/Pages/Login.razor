@@ -1,0 +1,205 @@
+﻿@page "/Account/Login"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@using VortechsApp.Data
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Login> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Log in</PageTitle>
+
+<div class="auth-container">
+    <div class="auth-form-wrapper">
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-subtitle">Log in to your dtvem account</p>
+
+        <StatusMessage Message="@errorMessage" />
+        <EditForm EditContext="editContext" method="post" OnSubmit="LoginUser" FormName="login">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="username webauthn" aria-required="true" placeholder="name@example.com" />
+                <label for="Input.Email" class="form-label">Email</label>
+                <ValidationMessage For="() => Input.Email" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                <label for="Input.Password" class="form-label">Password</label>
+                <ValidationMessage For="() => Input.Password" class="text-danger" />
+            </div>
+            <div class="checkbox mb-3">
+                <label class="form-label remember-label">
+                    <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
+                    Remember me
+                </label>
+            </div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+
+            <div class="auth-links">
+                <a href="Account/ForgotPassword">Forgot your password?</a>
+            </div>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register</a></p>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        max-width: 450px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+    }
+
+    .auth-form-wrapper {
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 3rem 2.5rem;
+    }
+
+    .auth-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .auth-subtitle {
+        color: var(--text-secondary);
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .remember-label {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        cursor: pointer;
+    }
+
+    .auth-links {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .auth-links a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .auth-links a:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .auth-footer p {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .auth-footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .auth-footer a:hover {
+        color: var(--primary-hover);
+    }
+
+    @@media (max-width: 768px) {
+        .auth-container {
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .auth-form-wrapper {
+            padding: 2rem 1.5rem;
+        }
+    }
+</style>
+
+@code {
+    private string? errorMessage;
+    private EditContext editContext = default!;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Input ??= new();
+
+        editContext = new EditContext(Input);
+
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        }
+    }
+
+    public async Task LoginUser()
+    {
+        // Validate the form
+        if (!editContext.Validate())
+        {
+            return;
+        }
+
+        // This doesn't count login failures towards account lockout
+        // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+        var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
+        if (result.Succeeded)
+        {
+            Logger.LogInformation("User logged in.");
+            RedirectManager.RedirectTo(ReturnUrl);
+        }
+        else if (result.IsLockedOut)
+        {
+            Logger.LogWarning("User account locked out.");
+            RedirectManager.RedirectTo("Account/Lockout");
+        }
+        else
+        {
+            errorMessage = "Error: Invalid login attempt.";
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = "";
+
+        [Display(Name = "Remember me?")]
+        public bool RememberMe { get; set; }
+    }
+}

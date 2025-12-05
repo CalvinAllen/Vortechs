@@ -1,0 +1,153 @@
+﻿@page "/"
+
+<PageTitle>dtvem - Cross-Platform Virtual Environment Manager</PageTitle>
+
+<div class="landing-container">
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to dtvem</h1>
+            <p class="hero-subtitle">A cross-platform virtual environment manager for multiple developer tools. One unified tool that works seamlessly across Windows, macOS, and Linux.</p>
+            <div class="hero-actions">
+                <a href="https://github.com/dtvem/dtvem" target="_blank" class="btn btn-primary btn-lg">View on GitHub</a>
+                <AuthorizeView>
+                    <NotAuthorized>
+                        <a href="/Account/Register" class="btn btn-secondary btn-lg">Sign Up</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    </div>
+
+    <div class="features-section">
+        <div class="feature-card">
+            <div class="feature-icon">🌍</div>
+            <h3>Cross-Platform</h3>
+            <p>Identical behavior across Windows, macOS, and Linux. Replaces fragmented tools like nvm, pyenv, and rbenv with a unified solution written in Go.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚙️</div>
+            <h3>Shim-Based Architecture</h3>
+            <p>Automatic version switching without shell integration. Per-directory configuration via .dtvem/runtimes.json with system PATH fallback.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>Smart Features</h3>
+            <p>Auto-install prompting for missing versions, migration from existing tools, auto-reshim detection for global packages, and seamless coexistence.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .landing-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .hero-section {
+        text-align: center;
+        padding: 4rem 0;
+        margin-bottom: 4rem;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #5cd4c6, #4fd1c5, #5dd9c9);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-lg {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 0.75rem;
+    }
+
+    .btn-secondary {
+        background: var(--surface);
+        color: var(--text-primary);
+        border: 2px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--border-color);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .features-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .feature-card {
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(92, 212, 198, 0.3);
+        border-color: var(--primary-color);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        font-size: 1.5rem;
+    }
+
+    .feature-card p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    @@media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>

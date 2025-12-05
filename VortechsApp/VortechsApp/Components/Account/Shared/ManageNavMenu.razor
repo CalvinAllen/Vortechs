@@ -1,0 +1,46 @@
+﻿<nav class="manage-nav-menu">
+    <NavLink class="manage-nav-link" href="Account/Manage" Match="NavLinkMatch.All">Profile</NavLink>
+    <NavLink class="manage-nav-link" href="Account/Manage/Email">Email</NavLink>
+    <NavLink class="manage-nav-link" href="Account/Manage/ChangePassword">Password</NavLink>
+</nav>
+
+<style>
+    .manage-nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .manage-nav-link {
+        padding: 0.75rem 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+    .manage-nav-link:hover {
+        background: var(--surface);
+        color: var(--text-primary);
+    }
+
+    .manage-nav-link.active {
+        background: var(--primary-color);
+        color: #1a2332;
+    }
+
+    @@media (max-width: 992px) {
+        .manage-nav-menu {
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .manage-nav-link {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+

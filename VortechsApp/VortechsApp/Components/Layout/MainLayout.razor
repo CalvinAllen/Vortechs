@@ -1,0 +1,62 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+    <header class="top-header">
+        <div class="header-content">
+            <a class="logo" href="">
+                <img src="/dtvem-logo.png" alt="dtvem" class="logo-image" />
+                <span>dtvem</span>
+            </a>
+            <nav class="header-nav">
+                <AuthorizeView>
+                    <Authorized>
+                        <a href="/Account/Manage" class="nav-link">@context.User.Identity?.Name</a>
+                        <form action="Account/Logout" method="post" class="logout-form">
+                            <AntiforgeryToken />
+                            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                            <button type="submit" class="nav-link logout-btn">Logout</button>
+                        </form>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a href="/Account/Register" class="nav-link">Register</a>
+                        <a href="/Account/Login" class="nav-link">Login</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <article class="content">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
